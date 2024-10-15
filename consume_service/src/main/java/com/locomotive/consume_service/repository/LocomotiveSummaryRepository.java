@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
 public interface LocomotiveSummaryRepository extends JpaRepository<LocomotiveSummary, Long> {
 
-    Optional<LocomotiveSummary> findByLocomotiveCode(@Param("locomotiveCode") String locomotiveCode);
+    Optional<LocomotiveSummary> findByLocomotiveCodeAndTimestamp(@Param("locomotiveCode") String locomotiveCode, @Param("timestamp") LocalDateTime timestamp);
 
     @Query("SELECT ls FROM LocomotiveSummary ls WHERE ls.locomotiveCode = :locomotiveCode ORDER BY ls.timestamp DESC LIMIT 1")
     Optional<LocomotiveSummary> findLatestByLocomotiveCode(@Param("locomotiveCode") String locomotiveCode);

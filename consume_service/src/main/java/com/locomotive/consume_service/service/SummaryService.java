@@ -76,27 +76,29 @@ public class SummaryService implements Job {
         List<LocomotiveSensor> data = locomotiveSensorRepository.findAll();
 
         for (LocomotiveSensor sensor : data) {
-            Optional<LocomotiveSummary> existingSummary = locomotiveSummaryRepository.findByLocomotiveCode(sensor.getLocomotiveCode());
+            Optional<LocomotiveSummary> existingSummary = locomotiveSummaryRepository.findByLocomotiveCodeAndTimestamp(sensor.getLocomotiveCode(),sensor.getTimestamp());
 
-            LocomotiveSummary summary = existingSummary.orElseGet(LocomotiveSummary::new);
+            LocomotiveSummary summary = new LocomotiveSummary();
 
-            summary.setLocomotiveCode(sensor.getLocomotiveCode());
-            summary.setVibrationWarning(sensor.getMaintenanceWarning().isVibrationWarning());
-            summary.setOverheatWarning(sensor.getMaintenanceWarning().isOverheatWarning());
-            summary.setBrakePressureWarning(sensor.getMaintenanceWarning().isBrakePressureWarning());
+            if (existingSummary.isEmpty()) {
+                summary.setLocomotiveCode(sensor.getLocomotiveCode());
+                summary.setVibrationWarning(sensor.getMaintenanceWarning().isVibrationWarning());
+                summary.setOverheatWarning(sensor.getMaintenanceWarning().isOverheatWarning());
+                summary.setBrakePressureWarning(sensor.getMaintenanceWarning().isBrakePressureWarning());
 
-            summary.setBrakePressureValue(sensor.getSensorData().getBrakePressure().getValue());
-            summary.setDoorStatus(sensor.getSensorData().getDoorStatus().getValue());
-            summary.setEngineTemp(sensor.getSensorData().getEngineTemperature().getValue());
-            summary.setGpsLatitude(sensor.getSensorData().getGps().getLatitude());
-            summary.setGpsLongitude(sensor.getSensorData().getGps().getLongitude());
-            summary.setGpsElevation((double) sensor.getSensorData().getGps().getElevation());
-            summary.setVibrationFreq(sensor.getSensorData().getVibration().getFrekuensi());
-            summary.setVibrationAmplitude(sensor.getSensorData().getVibration().getAmplitudo());
-            summary.setSpeed(sensor.getSensorData().getSpeed().getValue());
-            summary.setTimestamp(sensor.getTimestamp());
+                summary.setBrakePressureValue(sensor.getSensorData().getBrakePressure().getValue());
+                summary.setDoorStatus(sensor.getSensorData().getDoorStatus().getValue());
+                summary.setEngineTemp(sensor.getSensorData().getEngineTemperature().getValue());
+                summary.setGpsLatitude(sensor.getSensorData().getGps().getLatitude());
+                summary.setGpsLongitude(sensor.getSensorData().getGps().getLongitude());
+                summary.setGpsElevation((double) sensor.getSensorData().getGps().getElevation());
+                summary.setVibrationFreq(sensor.getSensorData().getVibration().getFrekuensi());
+                summary.setVibrationAmplitude(sensor.getSensorData().getVibration().getAmplitudo());
+                summary.setSpeed(sensor.getSensorData().getSpeed().getValue());
+                summary.setTimestamp(sensor.getTimestamp());
 
-            locomotiveSummaryRepository.save(summary);
+                locomotiveSummaryRepository.save(summary);
+            }
         }
 
         return ResponseEntity.ok("Success");
