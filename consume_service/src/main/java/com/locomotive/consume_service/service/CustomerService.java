@@ -10,11 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -28,8 +28,16 @@ public class CustomerService {
         try {
             var dataList = locomotiveSummaryRepository.findAll();
 
-            List<LocomotiveSummaryDTO> listResponse = dataList.stream()
-                    .sorted(Comparator.comparing(LocomotiveSummary::getLocomotiveCode))
+            Map<String, LocomotiveSummary> latestLocomotiveMap = dataList.stream()
+                    .collect(Collectors.groupingBy(
+                            LocomotiveSummary::getLocomotiveCode,
+                            Collectors.collectingAndThen(
+                                    Collectors.maxBy(Comparator.comparing(LocomotiveSummary::getTimestamp)),
+                                    Optional::get
+                            )
+                    ));
+
+            List<LocomotiveSummaryDTO> listResponse = latestLocomotiveMap.values().stream()
                     .map(summary -> LocomotiveSummaryDTO.builder()
                             .locomotiveCode(summary.getLocomotiveCode())
                             .vibrationWarning(summary.getVibrationWarning())
@@ -46,6 +54,7 @@ public class CustomerService {
                             .speed(summary.getSpeed())
                             .timestamp(summary.getTimestamp())
                             .build())
+                    .sorted(Comparator.comparing(LocomotiveSummaryDTO::getLocomotiveCode))
                     .collect(Collectors.toList());
 
             return GetAllDataRes.builder().dataList(listResponse).build();
