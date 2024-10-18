@@ -1,8 +1,6 @@
 package com.locomotive.consume_service.service;
 
 import com.locomotive.consume_service.dto.GetAllDataRes;
-import com.locomotive.consume_service.dto.GetDataGraph;
-import com.locomotive.consume_service.dto.GetDataGraphList;
 import com.locomotive.consume_service.dto.LocomotiveSummaryDTO;
 import com.locomotive.consume_service.model.LocomotiveSummary;
 import com.locomotive.consume_service.repository.LocomotiveSummaryRepository;
@@ -63,37 +61,6 @@ public class CustomerService {
             throw e;
         }
     }
-
-    public GetDataGraphList getLocomotiveGraph(String type) {
-        log.info("Start get graph data");
-        try {
-            List<LocomotiveSummary> dataGraphList = locomotiveSummaryRepository.findAll();
-            List<GetDataGraph> resultGraphs = new ArrayList<>();
-
-            for (LocomotiveSummary data : dataGraphList) {
-                GetDataGraph res = new GetDataGraph();
-
-                res.setLocomotiveCode(data.getLocomotiveCode());
-                res.setTimestamp(data.getTimestamp());
-
-                if (type.equals("engine_temp")) {
-                    res.setValue(data.getEngineTemp());
-                } else if (type.equals("brake_pressure")) {
-                    res.setValue(data.getBrakePressureValue());
-                } else if (type.equals("vibration_amplitudo")) {
-                    res.setValue(data.getVibrationAmplitude());
-                }
-
-                resultGraphs.add(res);
-            }
-
-            return GetDataGraphList.builder().dataGraphs(resultGraphs).build();
-        } catch (Exception e) {
-            log.error("Error : ", e);
-            throw e;
-        }
-    }
-
 
     public LocomotiveSummary getDetailLocomotive(String locomotiveCode) {
         log.info("Start get detail locomotive for code: {}", locomotiveCode);

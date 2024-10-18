@@ -1,7 +1,6 @@
 package com.locomotive.consume_service.controller;
 
 import com.locomotive.consume_service.dto.GetAllDataRes;
-import com.locomotive.consume_service.dto.GetDataGraphList;
 import com.locomotive.consume_service.model.LocomotiveSummary;
 import com.locomotive.consume_service.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +17,6 @@ public class CustomerController {
     @GetMapping(value = "/getlocomotivelist")
     public GetAllDataRes getLocomotiveList() {
         return customerService.getLocomotiveList();
-    }
-
-    @GetMapping(value = "/getlocomotivegraph")
-    public GetDataGraphList getLocomotiveGraph(@RequestParam("type") String type) {
-        return customerService.getLocomotiveGraph(type);
     }
 
     @GetMapping(value = "/getdetaillocomotive")
